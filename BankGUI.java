@@ -1,3 +1,6 @@
+/************************************
+ * Authors: Nathan and Tyler
+ * *********************************/
 package Project3;
 import java.awt.*;
 import javax.swing.*;
