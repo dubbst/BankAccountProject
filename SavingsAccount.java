@@ -1,4 +1,4 @@
-package Project3;
+package project3;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -67,7 +67,7 @@ public class SavingsAccount extends Account{
 
 	@Override
 	public String toString() {
-		return "Account [number=" + number + ", owner=" + owner + ", dateOpened=" + dateOpened + ", balance=" + balance
-				+ " " + minBalance + " " + interestRate +"]";
+		return "Account Number" + number + ", Account Owner=" + owner + ", dateOpened: " + dateOpened + ", Account Balance: " + balance
+				+ "Minimum Balance: " + minBalance + "Interest Rate: " + interestRate;
 	}
 }
