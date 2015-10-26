@@ -1,137 +1,91 @@
 package Project3;
-import java.awt.*;
+
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.GregorianCalendar;
-public class BankGUI extends JFrame{
+import java.util.*;
+
+public class BankModel extends AbstractTableModel{
+	private ArrayList<Account> acts;
 	
-	BankModel bank = new BankModel();
-	
-	JPanel panel;
-	private JMenuBar menubar = new JMenuBar();
-	
-	//JList list;
-	JTable table;
-	
-	private JMenu file = new JMenu("File");
-	private JMenu newAccount = new JMenu("New Account");
-	
-	private JMenuItem saveBinary = new JMenuItem("Save Binary");
-	private JMenuItem loadBinary = new JMenuItem("Load Binary");
-	private JMenuItem saveText = new JMenuItem("Save Text");
-	private JMenuItem loadText = new JMenuItem("Load Text");
-	
-	private JMenuItem checking = new JMenuItem("Checkings");
-	private JMenuItem saving = new JMenuItem("Savings");
-	
-	public BankGUI(){
-		
-		file.add(saveBinary);
-		file.add(loadBinary);
-		file.add(saveText);
-		file.add(loadText);
-		
-		newAccount.add(checking);
-		newAccount.add(saving);
-		
-		menubar.add(file);
-		menubar.add(newAccount);
-		
-		file.setMnemonic(KeyEvent.VK_F);
-		newAccount.setMnemonic(KeyEvent.VK_F);
-		
-		saveBinary.addActionListener(new MenuActionListener());
-		loadBinary.addActionListener(new MenuActionListener());
-		saveText.addActionListener(new MenuActionListener());
-		loadText.addActionListener(new MenuActionListener());
-		
-		checking.addActionListener(new MenuActionListener());
-		saving.addActionListener(new MenuActionListener());
-		
-		add(menubar);
-		
-		//list = new JList(bank.getActs().toArray());
-		//list.setModel(bank);
-		
-		table = new JTable(bank);
-		
-		//add(new JScrollPane(list));
-		
-		add(new JScrollPane(table));
-		setJMenuBar(menubar);
-		
-		this.setTitle("Bank");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(600, 400);
-		this.setVisible(true);
+	public BankModel(){
+		acts = new ArrayList<Account>();
 	}
-
-
-class MenuActionListener implements ActionListener {
-	  public void actionPerformed(ActionEvent e) {
-	    System.out.println("Selected: " + e.getActionCommand());
-	    if(e.getSource() == checking){
-	    	CheckingAccount a = new CheckingAccount();
-	    	String num =JOptionPane.showInputDialog("Enter Number of Account");
-	    	a.setNumber(num);
-	    	String name =JOptionPane.showInputDialog("Enter Name of Account");
-	    	a.setOwner(name);
-	    	String year =JOptionPane.showInputDialog("Enter year of Account");
-	    	int y = Integer.parseInt(year);
-	    	String month =JOptionPane.showInputDialog("Enter month of Account");
-	    	int m = Integer.parseInt(month);
-	    	String day =JOptionPane.showInputDialog("Enter day of Account");
-	    	int d = Integer.parseInt(day);
-	    	GregorianCalendar date = new GregorianCalendar(y, m, d);
-	    	a.setDateOpened(date);
-	    	String bal =JOptionPane.showInputDialog("Enter Balance of Account");
-	    	double b = Double.parseDouble(bal);
-	    	a.setBalance(b);
-	    	String mFee =JOptionPane.showInputDialog("Enter Monthly Fee of Account");
-	    	double mf = Double.parseDouble(mFee);
-	    	a.setMonthlyFee(mf);
-	    	bank.add(a);
-	    }
-	    if(e.getSource() == saving){
-	    	SavingsAccount a = new SavingsAccount();
-	    	String num =JOptionPane.showInputDialog("Enter Number of Account");
-	    	a.setNumber(num);
-	    	String name =JOptionPane.showInputDialog("Enter Name of Account");
-	    	a.setOwner(name);
-	    	String year =JOptionPane.showInputDialog("Enter year of Account");
-	    	int y = Integer.parseInt(year);
-	    	String month =JOptionPane.showInputDialog("Enter month of Account");
-	    	int m = Integer.parseInt(month);
-	    	String day =JOptionPane.showInputDialog("Enter day of Account");
-	    	int d = Integer.parseInt(day);
-	    	GregorianCalendar date = new GregorianCalendar(y, m, d);
-	    	a.setDateOpened(date);
-	    	String bal =JOptionPane.showInputDialog("Enter Balance of Account");
-	    	double b = Double.parseDouble(bal);
-	    	a.setBalance(b);
-	    	String minBal =JOptionPane.showInputDialog("Enter Minimum Balance of Account");
-	    	double mb = Double.parseDouble(minBal);
-	    	a.setMinBalance(mb);
-	    	String rate =JOptionPane.showInputDialog("Enter Interest Rate of Account");
-	    	double r = Double.parseDouble(rate);
-	    	a.setInterestRate(r);
-	    	bank.add(a);
-	    }
-	    if(e.getSource() == saveBinary){
 	
-	    }
-	    if(e.getSource() == loadBinary){
+	public void add(Account a){
+		acts.add(a);
+		fireTableRowsInserted(0, getSize()-1);
+	}
 	
-	    }
-	    if(e.getSource() == saveText){
+	public void delete(Account a){
+		acts.remove(a);
+		fireTableRowsDeleted(0, getSize()-1);
+	}
 	
-	    }
-	    if(e.getSource() == loadText){
+	public void Update(Account a){
+		acts.add(a);
+		fireTableRowsUpdated(0, getSize()-1);
+	}
 	
-	    }
-	  }
-}
+	public ArrayList getActs(){
+		return acts;
+	}
+	public int getColumnCount(){
+		return 7;
+	}
+	
+	public int getRowCount(){
+		return acts.size();
+	}
+	
+	public Object getValueAt(int x, int y){
+		String[][] array = new String[acts.size()][7];
+		for (int i = 0; i < acts.size(); i++) {
+		    array[i][0] = acts.get(i).getNumber();
+		    array[i][1] = acts.get(i).getOwner();
+		    array[i][2] = "" + acts.get(i).getDateOpened();
+		    array[i][3] = "" + acts.get(i).getBalance();
+		    array[i][4] = " ";
+		    array[i][5] = " ";
+		    array[i][6] = " ";
+		    if(acts.get(i) instanceof CheckingAccount){
+		    	CheckingAccount a = new CheckingAccount();
+		    	a = (CheckingAccount)acts.get(i);
+		    	array[i][4] = "" + a.getMonthlyFee();
+		    }
+		    if(acts.get(i) instanceof SavingsAccount){
+		    	SavingsAccount a = new SavingsAccount();
+		    	a = (SavingsAccount)acts.get(i);
+		    	array[i][5] = "" + a.getMinBalance();
+		    	array[i][6] = "" + a.getInterestRate();
+		    }
+		}
+		return array[x][y];
+	}
+	
+	public String getColumnName(int i){
+		if(i==0){
+			return "Account Name";
+		}else if(i==1){
+			return "Name";
+		}else if(i==2){
+			return "Date";
+		}else if(i==3){
+			return "Balance";
+		}else if(i==4){
+			return "Monthly Fee";
+		}else if(i==5){
+			return "Minimum Balance";
+		}else{
+			return "Interest Rate";
+		}
+	}
+	
+	public Object getElementAt(int arg0){
+		return acts.get(arg0);
+	}
+	
+	public int getSize(){
+		return acts.size();
+	}
 }
