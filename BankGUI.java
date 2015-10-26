@@ -16,7 +16,8 @@ public class BankGUI extends JFrame{
 	JPanel panel;
 	private JMenuBar menubar = new JMenuBar();
 	
-	JList list;
+	//JList list;
+	JTable table;
 	
 	private JMenu file = new JMenu("File");
 	private JMenu newAccount = new JMenu("New Account");
@@ -55,10 +56,14 @@ public class BankGUI extends JFrame{
 		
 		add(menubar);
 		
-		list = new JList(bank.getActs().toArray());
-		list.setModel(bank);
+		//list = new JList(bank.getActs().toArray());
+		//list.setModel(bank);
 		
-		add(new JScrollPane(list));
+		table = new JTable(bank);
+		
+		//add(new JScrollPane(list));
+		
+		add(new JScrollPane(table));
 		setJMenuBar(menubar);
 		
 		this.setTitle("Bank");
@@ -73,50 +78,140 @@ class MenuActionListener implements ActionListener {
 	    System.out.println("Selected: " + e.getActionCommand());
 	    if(e.getSource() == checking){
 	    	CheckingAccount a = new CheckingAccount();
-	    	String num =JOptionPane.showInputDialog("Enter Number of Account");
-	    	a.setNumber(num);
-	    	String name =JOptionPane.showInputDialog("Enter Name of Account");
-	    	a.setOwner(name);
-	    	String year =JOptionPane.showInputDialog("Enter year of Account");
-	    	int y = Integer.parseInt(year);
-	    	String month =JOptionPane.showInputDialog("Enter month of Account");
-	    	int m = Integer.parseInt(month);
-	    	String day =JOptionPane.showInputDialog("Enter day of Account");
-	    	int d = Integer.parseInt(day);
-	    	GregorianCalendar date = new GregorianCalendar(y, m, d);
-	    	a.setDateOpened(date);
-	    	String bal =JOptionPane.showInputDialog("Enter Balance of Account");
-	    	double b = Double.parseDouble(bal);
-	    	a.setBalance(b);
-	    	String mFee =JOptionPane.showInputDialog("Enter Monthly Fee of Account");
-	    	double mf = Double.parseDouble(mFee);
-	    	a.setMonthlyFee(mf);
-	    	bank.add(a);
+//			String num =JOptionPane.showInputDialog("Enter Number of Account");
+//			a.setNumber(num);
+//			String name =JOptionPane.showInputDialog("Enter Name of Account");
+//			a.setOwner(name);
+//			String year =JOptionPane.showInputDialog("Enter year of Account");
+//			int y = Integer.parseInt(year);
+//			String month =JOptionPane.showInputDialog("Enter month of Account");
+//			int m = Integer.parseInt(month);
+//			String day =JOptionPane.showInputDialog("Enter day of Account");
+//			int d = Integer.parseInt(day);
+//			GregorianCalendar date = new GregorianCalendar(y, m, d);
+//			a.setDateOpened(date);
+//			String bal =JOptionPane.showInputDialog("Enter Balance of Account");
+//			double b = Double.parseDouble(bal);
+//			a.setBalance(b);
+//			String mFee =JOptionPane.showInputDialog("Enter Monthly Fee of Account");
+//			double mf = Double.parseDouble(mFee);
+//			a.setMonthlyFee(mf);
+//			bank.add(a);
+			
+			JTextField acctNum = new JTextField(10);
+			JTextField acctOwner = new JTextField(10);
+			JTextField date = new JTextField(10);
+			JTextField acctBal = new JTextField(10);
+			JTextField fee = new JTextField(10);
+			
+			JPanel checkingPanel = new JPanel();
+			checkingPanel.setLayout(new BoxLayout(checkingPanel, 
+					BoxLayout.Y_AXIS));
+			checkingPanel.add(new JLabel("Account Number: "));
+			checkingPanel.add(acctNum);
+			checkingPanel.add(new JLabel("Account Owner: "));
+			checkingPanel.add(acctOwner);
+			checkingPanel.add(new JLabel("Date Opened: "));
+			checkingPanel.add(date);
+			checkingPanel.add(new JLabel("Account Balance: "));
+			checkingPanel.add(acctBal);
+			checkingPanel.add(new JLabel("Monthly Fee: "));
+			checkingPanel.add(fee);
+			
+			int result = JOptionPane.showConfirmDialog(null, 
+					checkingPanel, "Enter Checking "
+							+ "Account", 
+							JOptionPane.OK_CANCEL_OPTION);
+
+			
+			if (result == JOptionPane.OK_OPTION) {
+				String sAcctNum = acctNum.getText();
+				a.setNumber(sAcctNum);
+				String sAcctOwner = acctOwner.getText();
+				a.setOwner(sAcctOwner);
+				//GregorianCalendar date = new GregorianCalendar(y, m, d);
+				//a.setDateOpened(date.toString());
+				String bal = acctBal.getText();
+				double b = Double.parseDouble(bal);
+				a.setBalance(b);
+				String sFee = fee.getText();
+				double f = Double.parseDouble(sFee);
+				a.setMonthlyFee(f);
+				bank.add(a);
+	    }
 	    }
 	    if(e.getSource() == saving){
 	    	SavingsAccount a = new SavingsAccount();
-	    	String num =JOptionPane.showInputDialog("Enter Number of Account");
-	    	a.setNumber(num);
-	    	String name =JOptionPane.showInputDialog("Enter Name of Account");
-	    	a.setOwner(name);
-	    	String year =JOptionPane.showInputDialog("Enter year of Account");
-	    	int y = Integer.parseInt(year);
-	    	String month =JOptionPane.showInputDialog("Enter month of Account");
-	    	int m = Integer.parseInt(month);
-	    	String day =JOptionPane.showInputDialog("Enter day of Account");
-	    	int d = Integer.parseInt(day);
-	    	GregorianCalendar date = new GregorianCalendar(y, m, d);
-	    	a.setDateOpened(date);
-	    	String bal =JOptionPane.showInputDialog("Enter Balance of Account");
-	    	double b = Double.parseDouble(bal);
-	    	a.setBalance(b);
-	    	String minBal =JOptionPane.showInputDialog("Enter Minimum Balance of Account");
-	    	double mb = Double.parseDouble(minBal);
-	    	a.setMinBalance(mb);
-	    	String rate =JOptionPane.showInputDialog("Enter Interest Rate of Account");
-	    	double r = Double.parseDouble(rate);
-	    	a.setInterestRate(r);
-	    	bank.add(a);
+//			String num =JOptionPane.showInputDialog("Enter Number of Account");
+//			a.setNumber(num);
+//			String name =JOptionPane.showInputDialog("Enter Name of Account");
+//			a.setOwner(name);
+//			String year =JOptionPane.showInputDialog("Enter year of Account");
+//			int y = Integer.parseInt(year);
+//			String month =JOptionPane.showInputDialog("Enter month of Account");
+//			int m = Integer.parseInt(month);
+//			String day =JOptionPane.showInputDialog("Enter day of Account");
+//			int d = Integer.parseInt(day);
+//			GregorianCalendar date = new GregorianCalendar(y, m, d);
+//			a.setDateOpened(date);
+//			String bal =JOptionPane.showInputDialog("Enter Balance of Account");
+//			double b = Double.parseDouble(bal);
+//			a.setBalance(b);
+//			String minBal =JOptionPane.showInputDialog("Enter Minimum Balance of Account");
+//			double mb = Double.parseDouble(minBal);
+//			a.setMinBalance(mb);
+//			String rate =JOptionPane.showInputDialog("Enter Interest Rate of Account");
+//			double r = Double.parseDouble(rate);
+//			a.setInterestRate(r);
+			
+			JTextField acctNum = new JTextField(10);
+			JTextField acctOwner = new JTextField(10);
+			JTextField date = new JTextField(10);
+			JTextField acctBal = new JTextField(10);
+			JTextField minBal = new JTextField(10);
+			JTextField intRate = new JTextField(10);
+			
+			JPanel checkingPanel = new JPanel();
+			checkingPanel.setLayout(new BoxLayout(checkingPanel, 
+					BoxLayout.Y_AXIS));
+			checkingPanel.add(new JLabel("Account Number: "));
+			checkingPanel.add(acctNum);
+			checkingPanel.add(new JLabel("Account Owner: "));
+			checkingPanel.add(acctOwner);
+			checkingPanel.add(new JLabel("Date Opened: "));
+			checkingPanel.add(date);
+			checkingPanel.add(new JLabel("Account Balance: "));
+			checkingPanel.add(acctBal);
+			checkingPanel.add(new JLabel("Minimum Balance: "));
+			checkingPanel.add(minBal);
+			checkingPanel.add(new JLabel("Interest Rate: "));
+			checkingPanel.add(intRate);
+			
+			int result = JOptionPane.showConfirmDialog(null, 
+					checkingPanel, "Enter Checking "
+							+ "Account", 
+							JOptionPane.OK_CANCEL_OPTION);
+
+			
+			if (result == JOptionPane.OK_OPTION) {
+				String sAcctNum = acctNum.getText();
+				a.setNumber(sAcctNum);
+				String sAcctOwner = acctOwner.getText();
+				a.setOwner(sAcctOwner);
+				//GregorianCalendar date = new GregorianCalendar(y, m, d);
+				//a.setDateOpened(date.toString());
+				String bal = acctBal.getText();
+				double b = Double.parseDouble(bal);
+				a.setBalance(b);
+				String sMinBal = minBal.getText();
+				double mb = Double.parseDouble(sMinBal);
+				a.setMinBalance(mb);
+				String sIntRate = intRate.getText();
+				double ir = Double.parseDouble(sIntRate);
+				a.setInterestRate(ir);
+				
+			
+			bank.add(a);
 	    }
 	    if(e.getSource() == saveBinary){
 	
@@ -131,5 +226,6 @@ class MenuActionListener implements ActionListener {
 	
 	    }
 	  }
+}
 }
 }
