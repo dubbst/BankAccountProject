@@ -17,9 +17,13 @@ public class BankModel extends AbstractTableModel{
 		fireTableRowsInserted(0, getSize()-1);
 	}
 	
-	public void delete(Account a){
-		acts.remove(a);
-		fireTableRowsDeleted(0, getSize()-1);
+	public void delete(int index){
+		acts.remove(acts.get(index));
+		if(acts.size()>0){
+			fireTableRowsDeleted(0, getSize()-1);
+		}else{
+			fireTableRowsDeleted(0, getSize());
+		}
 	}
 	
 	public void Update(){
