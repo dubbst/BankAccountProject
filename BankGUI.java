@@ -2,13 +2,24 @@
  * Authors: Nathan and Tyler
  * *********************************/
 package Project3;
-import java.awt.*;
-import javax.swing.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.GregorianCalendar;
+
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
 public class BankGUI extends JFrame{
 	
 	BankModel bank = new BankModel();
@@ -35,7 +46,15 @@ public class BankGUI extends JFrame{
 	private JMenuItem numberSort = new JMenuItem("Sort by Account");
 	private JMenuItem dateSort = new JMenuItem("Sort by Date");
 	
+	JCalendar calendar;
+	
 	public BankGUI(){
+		
+		//calendar = new JCalendar();
+		
+		//JDateChooser dateChooser=new JDateChooser();
+		//dateChooser.setBounds(20, 20, 200, 20);
+		//add(dateChooser);
 		
 		file.add(saveBinary);
 		file.add(loadBinary);
@@ -126,7 +145,10 @@ class MenuActionListener implements ActionListener {
 			checkingPanel.add(new JLabel("Account Owner: "));
 			checkingPanel.add(acctOwner);
 			checkingPanel.add(new JLabel("Date Opened: "));
-			checkingPanel.add(date);
+			//checkingPanel.add(date);
+			JDateChooser dateChooser=new JDateChooser();
+			dateChooser.setBounds(20, 20, 200, 20);
+			checkingPanel.add(dateChooser);
 			checkingPanel.add(new JLabel("Account Balance: "));
 			checkingPanel.add(acctBal);
 			checkingPanel.add(new JLabel("Monthly Fee: "));
@@ -145,6 +167,7 @@ class MenuActionListener implements ActionListener {
 				a.setOwner(sAcctOwner);
 				//GregorianCalendar date = new GregorianCalendar(y, m, d);
 				//a.setDateOpened(date.toString());
+				a.setDateOpened(dateChooser.getDate());
 				String bal = acctBal.getText();
 				double b = Double.parseDouble(bal);
 				a.setBalance(b);
@@ -193,7 +216,10 @@ class MenuActionListener implements ActionListener {
 			checkingPanel.add(new JLabel("Account Owner: "));
 			checkingPanel.add(acctOwner);
 			checkingPanel.add(new JLabel("Date Opened: "));
-			checkingPanel.add(date);
+			//checkingPanel.add(date);
+			JDateChooser dateChooser=new JDateChooser();
+			dateChooser.setBounds(20, 20, 200, 20);
+			checkingPanel.add(dateChooser);
 			checkingPanel.add(new JLabel("Account Balance: "));
 			checkingPanel.add(acctBal);
 			checkingPanel.add(new JLabel("Minimum Balance: "));
@@ -214,6 +240,7 @@ class MenuActionListener implements ActionListener {
 				a.setOwner(sAcctOwner);
 				//GregorianCalendar date = new GregorianCalendar(y, m, d);
 				//a.setDateOpened(date.toString());
+				a.setDateOpened(dateChooser.getDate());
 				String bal = acctBal.getText();
 				double b = Double.parseDouble(bal);
 				a.setBalance(b);
@@ -225,7 +252,8 @@ class MenuActionListener implements ActionListener {
 				a.setInterestRate(ir);
 				
 			
-			bank.add(a);
+				bank.add(a);
+			}
 	    }
 	    if(e.getSource() == saveBinary){
 	
@@ -249,6 +277,5 @@ class MenuActionListener implements ActionListener {
 	    	bank.sortByDate();
 	    }
 	  }
-}
 }
 }
