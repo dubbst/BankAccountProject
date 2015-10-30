@@ -38,6 +38,8 @@ public class BankGUI extends JFrame{
 	private JMenuItem loadBinary = new JMenuItem("Load Binary");
 	private JMenuItem saveText = new JMenuItem("Save Text");
 	private JMenuItem loadText = new JMenuItem("Load Text");
+	private JMenuItem delete = new JMenuItem("Delete");
+	private JMenuItem update = new JMenuItem("Update");
 	
 	private JMenuItem checking = new JMenuItem("Checkings");
 	private JMenuItem saving = new JMenuItem("Savings");
@@ -60,6 +62,8 @@ public class BankGUI extends JFrame{
 		file.add(loadBinary);
 		file.add(saveText);
 		file.add(loadText);
+		file.add(delete);
+		file.add(update);
 		
 		newAccount.add(checking);
 		newAccount.add(saving);
@@ -79,6 +83,8 @@ public class BankGUI extends JFrame{
 		loadBinary.addActionListener(new MenuActionListener());
 		saveText.addActionListener(new MenuActionListener());
 		loadText.addActionListener(new MenuActionListener());
+		delete.addActionListener(new MenuActionListener());
+		update.addActionListener(new MenuActionListener());
 		
 		checking.addActionListener(new MenuActionListener());
 		saving.addActionListener(new MenuActionListener());
@@ -274,6 +280,15 @@ class MenuActionListener implements ActionListener {
 	    	bank.sortByNumber();
 	    }
 	    if(e.getSource() == dateSort){
+	    	bank.sortByDate();
+	    }
+	    if(e.getSource() == delete){
+	    	bank.delete(table.getSelectedRow());
+	    	bank.sortByDate();
+	    }
+	    if(e.getSource() == update){
+	    	table.getSelectedRow();
+	    	bank.update();
 	    	bank.sortByDate();
 	    }
 	  }
