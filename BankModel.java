@@ -119,6 +119,6 @@ class numberComparator implements Comparator<Account>{
 
 class dateComparator implements Comparator<Account>{
 	public int compare(Account s1, Account s2){
-		return s1.getOwner().compareTo(s2.getOwner());
+		return s1.getDateOpened().compareTo(s2.getDateOpened());
 	}
 }
