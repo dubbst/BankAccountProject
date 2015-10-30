@@ -22,9 +22,24 @@ public class BankModel extends AbstractTableModel{
 		fireTableRowsDeleted(0, getSize()-1);
 	}
 	
-	public void Update(Account a){
-		acts.add(a);
+	public void Update(){
+		//acts.add(a);
 		fireTableRowsUpdated(0, getSize()-1);
+	}
+	
+	public void sortByName(){
+		Collections.sort(acts, new nameComparator());
+		this.Update();
+	}
+	
+	public void sortByNumber(){
+		Collections.sort(acts, new numberComparator());
+		this.Update();
+	}
+
+	public void sortByDate(){
+		Collections.sort(acts, new dateComparator());
+		this.Update();
 	}
 	
 	public ArrayList getActs(){
@@ -87,5 +102,23 @@ public class BankModel extends AbstractTableModel{
 	
 	public int getSize(){
 		return acts.size();
+	}
+}
+
+class nameComparator implements Comparator<Account>{
+	public int compare(Account s1, Account s2){
+		return s1.getOwner().compareTo(s2.getOwner());
+	}
+}
+
+class numberComparator implements Comparator<Account>{
+	public int compare(Account s1, Account s2){
+		return s1.getNumber().compareTo(s2.getNumber());
+	}
+}
+
+class dateComparator implements Comparator<Account>{
+	public int compare(Account s1, Account s2){
+		return s1.getOwner().compareTo(s2.getOwner());
 	}
 }
