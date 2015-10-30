@@ -21,6 +21,7 @@ public class BankGUI extends JFrame{
 	
 	private JMenu file = new JMenu("File");
 	private JMenu newAccount = new JMenu("New Account");
+	private JMenu sortMenu = new JMenu("Sort");
 	
 	private JMenuItem saveBinary = new JMenuItem("Save Binary");
 	private JMenuItem loadBinary = new JMenuItem("Load Binary");
@@ -29,6 +30,10 @@ public class BankGUI extends JFrame{
 	
 	private JMenuItem checking = new JMenuItem("Checkings");
 	private JMenuItem saving = new JMenuItem("Savings");
+	
+	private JMenuItem nameSort = new JMenuItem("Sort by Name");
+	private JMenuItem numberSort = new JMenuItem("Sort by Account");
+	private JMenuItem dateSort = new JMenuItem("Sort by Date");
 	
 	public BankGUI(){
 		
@@ -40,8 +45,13 @@ public class BankGUI extends JFrame{
 		newAccount.add(checking);
 		newAccount.add(saving);
 		
+		sortMenu.add(nameSort);
+		sortMenu.add(numberSort);
+		sortMenu.add(dateSort);
+		
 		menubar.add(file);
 		menubar.add(newAccount);
+		menubar.add(sortMenu);
 		
 		file.setMnemonic(KeyEvent.VK_F);
 		newAccount.setMnemonic(KeyEvent.VK_F);
@@ -53,6 +63,10 @@ public class BankGUI extends JFrame{
 		
 		checking.addActionListener(new MenuActionListener());
 		saving.addActionListener(new MenuActionListener());
+		
+		nameSort.addActionListener(new MenuActionListener());
+		numberSort.addActionListener(new MenuActionListener());
+		dateSort.addActionListener(new MenuActionListener());
 		
 		add(menubar);
 		
@@ -224,6 +238,15 @@ class MenuActionListener implements ActionListener {
 	    }
 	    if(e.getSource() == loadText){
 	
+	    }
+	    if(e.getSource() == nameSort){
+	    	bank.sortByName();
+	    }
+	    if(e.getSource() == numberSort){
+	    	bank.sortByNumber();
+	    }
+	    if(e.getSource() == dateSort){
+	    	bank.sortByDate();
 	    }
 	  }
 }
