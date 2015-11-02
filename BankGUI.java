@@ -107,7 +107,7 @@ public class BankGUI extends JFrame{
 		
 		this.setTitle("Bank");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(600, 400);
+		this.setSize(1000, 400);
 		this.setVisible(true);
 	}
 
@@ -262,16 +262,16 @@ class MenuActionListener implements ActionListener {
 			}
 	    }
 	    if(e.getSource() == saveBinary){
-	
+	    	bank.saveToBinary();
 	    }
 	    if(e.getSource() == loadBinary){
-	
+	    	bank.LoadFromBinary();
 	    }
 	    if(e.getSource() == saveText){
-	
+	    	bank.saveToText();
 	    }
 	    if(e.getSource() == loadText){
-	
+	    	bank.LoadFromText();
 	    }
 	    if(e.getSource() == nameSort){
 	    	bank.sortByName();
