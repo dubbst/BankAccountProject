@@ -1,296 +1,343 @@
-/************************************
- * Authors: Nathan and Tyler
- * *********************************/
 package Project3;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 
-import com.toedter.calendar.JCalendar;
-import com.toedter.calendar.JDateChooser;
-public class BankGUI extends JFrame{
+import java.io.*;
+
+import javax.swing.table.AbstractTableModel;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+public class BankModel extends AbstractTableModel{
+	private ArrayList<Account> acts;
 	
-	BankModel bank = new BankModel();
+	public BankModel(){
+		acts = new ArrayList<Account>();
+	}
 	
-	JPanel panel;
-	private JMenuBar menubar = new JMenuBar();
+	public void add(Account a){
+		acts.add(a);
+		fireTableRowsInserted(0, getSize()-1);
+	}
 	
-	//JList list;
-	JTable table;
+	public void delete(int index){
+		acts.remove(acts.get(index));
+		if(acts.size()>0){
+			fireTableRowsDeleted(0, getSize()-1);
+		}else{
+			fireTableRowsDeleted(0, getSize());
+		}
+	}
 	
-	private JMenu file = new JMenu("File");
-	private JMenu newAccount = new JMenu("New Account");
-	private JMenu sortMenu = new JMenu("Sort");
+	public void update(){
+		//acts.add(a);
+		fireTableRowsUpdated(0, getSize()-1);
+	}
 	
-	private JMenuItem saveBinary = new JMenuItem("Save Binary");
-	private JMenuItem loadBinary = new JMenuItem("Load Binary");
-	private JMenuItem saveText = new JMenuItem("Save Text");
-	private JMenuItem loadText = new JMenuItem("Load Text");
-	private JMenuItem delete = new JMenuItem("Delete");
-	private JMenuItem update = new JMenuItem("Update");
+	public void sortByName(){
+		Collections.sort(acts, new nameComparator());
+		this.update();
+	}
 	
-	private JMenuItem checking = new JMenuItem("Checkings");
-	private JMenuItem saving = new JMenuItem("Savings");
-	
-	private JMenuItem nameSort = new JMenuItem("Sort by Name");
-	private JMenuItem numberSort = new JMenuItem("Sort by Account");
-	private JMenuItem dateSort = new JMenuItem("Sort by Date");
-	
-	JCalendar calendar;
-	
-	public BankGUI(){
-		
-		//calendar = new JCalendar();
-		
-		//JDateChooser dateChooser=new JDateChooser();
-		//dateChooser.setBounds(20, 20, 200, 20);
-		//add(dateChooser);
-		
-		file.add(saveBinary);
-		file.add(loadBinary);
-		file.add(saveText);
-		file.add(loadText);
-		file.add(delete);
-		file.add(update);
-		
-		newAccount.add(checking);
-		newAccount.add(saving);
-		
-		sortMenu.add(nameSort);
-		sortMenu.add(numberSort);
-		sortMenu.add(dateSort);
-		
-		menubar.add(file);
-		menubar.add(newAccount);
-		menubar.add(sortMenu);
-		
-		file.setMnemonic(KeyEvent.VK_F);
-		newAccount.setMnemonic(KeyEvent.VK_F);
-		
-		saveBinary.addActionListener(new MenuActionListener());
-		loadBinary.addActionListener(new MenuActionListener());
-		saveText.addActionListener(new MenuActionListener());
-		loadText.addActionListener(new MenuActionListener());
-		delete.addActionListener(new MenuActionListener());
-		update.addActionListener(new MenuActionListener());
-		
-		checking.addActionListener(new MenuActionListener());
-		saving.addActionListener(new MenuActionListener());
-		
-		nameSort.addActionListener(new MenuActionListener());
-		numberSort.addActionListener(new MenuActionListener());
-		dateSort.addActionListener(new MenuActionListener());
-		
-		add(menubar);
-		
-		//list = new JList(bank.getActs().toArray());
-		//list.setModel(bank);
-		
-		table = new JTable(bank);
-		
-		//add(new JScrollPane(list));
-		
-		add(new JScrollPane(table));
-		setJMenuBar(menubar);
-		
-		this.setTitle("Bank");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(1000, 400);
-		this.setVisible(true);
+	public void sortByNumber(){
+		Collections.sort(acts, new numberComparator());
+		this.update();
 	}
 
+	public void sortByDate(){
+		Collections.sort(acts, new dateComparator());
+		this.update();
+	}
+	
+	public ArrayList getActs(){
+		return acts;
+	}
+	public int getColumnCount(){
+		return 7;
+	}
+	
+	public int getRowCount(){
+		return acts.size();
+	}
+	
+	public Object getValueAt(int x, int y){
+		String[][] array = new String[acts.size()][7];
+		for (int i = 0; i < acts.size(); i++) {
+		    array[i][0] = acts.get(i).getNumber();
+		    array[i][1] = acts.get(i).getOwner();
+		    array[i][2] = "" + acts.get(i).getDateOpened();
+		    array[i][3] = "" + acts.get(i).getBalance();
+		    array[i][4] = " ";
+		    array[i][5] = " ";
+		    array[i][6] = " ";
+		    if(acts.get(i) instanceof CheckingAccount){
+		    	CheckingAccount a = new CheckingAccount();
+		    	a = (CheckingAccount)acts.get(i);
+		    	array[i][4] = "" + a.getMonthlyFee();
+		    }
+		    if(acts.get(i) instanceof SavingsAccount){
+		    	SavingsAccount a = new SavingsAccount();
+		    	a = (SavingsAccount)acts.get(i);
+		    	array[i][5] = "" + a.getMinBalance();
+		    	array[i][6] = "" + a.getInterestRate();
+		    }
+		}
+		return array[x][y];
+	}
+	
+	public String getColumnName(int i){
+		if(i==0){
+			return "Account Name";
+		}else if(i==1){
+			return "Name";
+		}else if(i==2){
+			return "Date";
+		}else if(i==3){
+			return "Balance";
+		}else if(i==4){
+			return "Monthly Fee";
+		}else if(i==5){
+			return "Minimum Balance";
+		}else{
+			return "Interest Rate";
+		}
+	}
+	
+	public Object getElementAt(int arg0){
+		return acts.get(arg0);
+	}
+	
+	public int getSize(){
+		return acts.size();
+	}
+	
+	public void saveToText(){
+		String fileName = "bank.txt";
+		ArrayList<Account> bankCopy = new ArrayList<Account>();
+		bankCopy = acts;
+		
+		
+        try {
+        	
+            FileWriter fileWriter =
+                new FileWriter(fileName);
 
-class MenuActionListener implements ActionListener {
-	  public void actionPerformed(ActionEvent e) {
-	    System.out.println("Selected: " + e.getActionCommand());
-	    if(e.getSource() == checking){
-	    	CheckingAccount a = new CheckingAccount();
-//			String num =JOptionPane.showInputDialog("Enter Number of Account");
-//			a.setNumber(num);
-//			String name =JOptionPane.showInputDialog("Enter Name of Account");
-//			a.setOwner(name);
-//			String year =JOptionPane.showInputDialog("Enter year of Account");
-//			int y = Integer.parseInt(year);
-//			String month =JOptionPane.showInputDialog("Enter month of Account");
-//			int m = Integer.parseInt(month);
-//			String day =JOptionPane.showInputDialog("Enter day of Account");
-//			int d = Integer.parseInt(day);
-//			GregorianCalendar date = new GregorianCalendar(y, m, d);
-//			a.setDateOpened(date);
-//			String bal =JOptionPane.showInputDialog("Enter Balance of Account");
-//			double b = Double.parseDouble(bal);
-//			a.setBalance(b);
-//			String mFee =JOptionPane.showInputDialog("Enter Monthly Fee of Account");
-//			double mf = Double.parseDouble(mFee);
-//			a.setMonthlyFee(mf);
-//			bank.add(a);
-			
-			JTextField acctNum = new JTextField(10);
-			JTextField acctOwner = new JTextField(10);
-			JTextField date = new JTextField(10);
-			JTextField acctBal = new JTextField(10);
-			JTextField fee = new JTextField(10);
-			
-			JPanel checkingPanel = new JPanel();
-			checkingPanel.setLayout(new BoxLayout(checkingPanel, 
-					BoxLayout.Y_AXIS));
-			checkingPanel.add(new JLabel("Account Number: "));
-			checkingPanel.add(acctNum);
-			checkingPanel.add(new JLabel("Account Owner: "));
-			checkingPanel.add(acctOwner);
-			checkingPanel.add(new JLabel("Date Opened: "));
-			//checkingPanel.add(date);
-			JDateChooser dateChooser=new JDateChooser();
-			dateChooser.setBounds(20, 20, 200, 20);
-			checkingPanel.add(dateChooser);
-			checkingPanel.add(new JLabel("Account Balance: "));
-			checkingPanel.add(acctBal);
-			checkingPanel.add(new JLabel("Monthly Fee: "));
-			checkingPanel.add(fee);
-			
-			int result = JOptionPane.showConfirmDialog(null, 
-					checkingPanel, "Enter Checking "
-							+ "Account", 
-							JOptionPane.OK_CANCEL_OPTION);
+            
+            PrintWriter PrintWriter =
+                new PrintWriter(fileWriter);
 
-			
-			if (result == JOptionPane.OK_OPTION) {
-				String sAcctNum = acctNum.getText();
-				a.setNumber(sAcctNum);
-				String sAcctOwner = acctOwner.getText();
-				a.setOwner(sAcctOwner);
-				//GregorianCalendar date = new GregorianCalendar(y, m, d);
-				//a.setDateOpened(date.toString());
-				a.setDateOpened(dateChooser.getDate());
-				String bal = acctBal.getText();
-				double b = Double.parseDouble(bal);
-				a.setBalance(b);
-				String sFee = fee.getText();
-				double f = Double.parseDouble(sFee);
-				a.setMonthlyFee(f);
-				bank.add(a);
-	    }
-	    }
-	    if(e.getSource() == saving){
-	    	SavingsAccount a = new SavingsAccount();
-//			String num =JOptionPane.showInputDialog("Enter Number of Account");
-//			a.setNumber(num);
-//			String name =JOptionPane.showInputDialog("Enter Name of Account");
-//			a.setOwner(name);
-//			String year =JOptionPane.showInputDialog("Enter year of Account");
-//			int y = Integer.parseInt(year);
-//			String month =JOptionPane.showInputDialog("Enter month of Account");
-//			int m = Integer.parseInt(month);
-//			String day =JOptionPane.showInputDialog("Enter day of Account");
-//			int d = Integer.parseInt(day);
-//			GregorianCalendar date = new GregorianCalendar(y, m, d);
-//			a.setDateOpened(date);
-//			String bal =JOptionPane.showInputDialog("Enter Balance of Account");
-//			double b = Double.parseDouble(bal);
-//			a.setBalance(b);
-//			String minBal =JOptionPane.showInputDialog("Enter Minimum Balance of Account");
-//			double mb = Double.parseDouble(minBal);
-//			a.setMinBalance(mb);
-//			String rate =JOptionPane.showInputDialog("Enter Interest Rate of Account");
-//			double r = Double.parseDouble(rate);
-//			a.setInterestRate(r);
-			
-			JTextField acctNum = new JTextField(10);
-			JTextField acctOwner = new JTextField(10);
-			JTextField date = new JTextField(10);
-			JTextField acctBal = new JTextField(10);
-			JTextField minBal = new JTextField(10);
-			JTextField intRate = new JTextField(10);
-			
-			JPanel checkingPanel = new JPanel();
-			checkingPanel.setLayout(new BoxLayout(checkingPanel, 
-					BoxLayout.Y_AXIS));
-			checkingPanel.add(new JLabel("Account Number: "));
-			checkingPanel.add(acctNum);
-			checkingPanel.add(new JLabel("Account Owner: "));
-			checkingPanel.add(acctOwner);
-			checkingPanel.add(new JLabel("Date Opened: "));
-			//checkingPanel.add(date);
-			JDateChooser dateChooser=new JDateChooser();
-			dateChooser.setBounds(20, 20, 200, 20);
-			checkingPanel.add(dateChooser);
-			checkingPanel.add(new JLabel("Account Balance: "));
-			checkingPanel.add(acctBal);
-			checkingPanel.add(new JLabel("Minimum Balance: "));
-			checkingPanel.add(minBal);
-			checkingPanel.add(new JLabel("Interest Rate: "));
-			checkingPanel.add(intRate);
-			
-			int result = JOptionPane.showConfirmDialog(null, 
-					checkingPanel, "Enter Checking "
-							+ "Account", 
-							JOptionPane.OK_CANCEL_OPTION);
+            
+           // bufferedWriter.write(bankCopy.toString());
+            for(int i=0;i<acts.size();i++){
+            	PrintWriter.println(acts.get(i).getAcntType());
+            	PrintWriter.println(acts.get(i).getNumber());
+            	PrintWriter.println(acts.get(i).getOwner());
+            	PrintWriter.println(""+acts.get(i).getBalance());
+            	PrintWriter.println(""+acts.get(i).getDateOpened());
+            	if(acts.get(i) instanceof CheckingAccount){
+            		CheckingAccount a = new CheckingAccount();
+            		a = (CheckingAccount) acts.get(i);
+            		PrintWriter.println(""+a.getMonthlyFee());
+            	}else{
+            		SavingsAccount b = new SavingsAccount();
+            		b = (SavingsAccount) acts.get(i);
+            		PrintWriter.println(""+b.getMinBalance());
+            		PrintWriter.println(""+b.getInterestRate());
+            	}
+            }
+            
+            PrintWriter.close();
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error writing to file '"
+                + fileName + "'");
+        }
 
+	}
+	
+	public void LoadFromText() {
+		String fileName = "bank.txt";
+		
+		Account ca = new CheckingAccount();
+		Account sa = new SavingsAccount();
+        //String line = null;
+        ArrayList<String> inActs = 
+        		new ArrayList<String>();
+        SimpleDateFormat parserSDF=new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+
+//        try {
+//            
+//            FileReader fileReader = 
+//                new FileReader(fileName);
+//
+//            
+//            BufferedReader bufferedReader = 
+//                new BufferedReader(fileReader);
+//
+//            while((line = bufferedReader.readLine())
+//            		!= null) {
+//                //ca.setNumber(bufferedReader.readLine());
+//            	//bank.add(ca);
+//            	inActs.add(line);
+//            	Iterator<String> it = inActs.iterator();
+//            	while(it.hasNext()){
+//            		inActs.add(it.next());
+//            		System.out.println(inActs);
+//            	}
+//            }   
+//
+//            
+//            bufferedReader.close();         
+//        }
+        
+        try (BufferedReader br = new BufferedReader(new FileReader("bank.txt"))) {
+            String line;
+            ArrayList<String> temp = new ArrayList<String>();
+            Account a;
+            while ((line = br.readLine()) != null) {
+               System.out.println(line);
+               temp.add(line);
+            }
+            br.close();
+            System.out.println(temp);
+            int place=0;
+        
+            
+            for(int i=0;i<temp.size();i++){
+            	if(temp.get(i).equals("Checking")){
+            		a=new CheckingAccount();
+            		a.setNumber(temp.get(i+1));
+            		a.setOwner(temp.get(i+2));
+            		a.setBalance(Double.parseDouble(temp.get(i+3)));
+            		try {
+						a.setDateOpened(parserSDF.parse(temp.get(i+4)));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            		
+            		
+            		((CheckingAccount) a).setMonthlyFee(Double.parseDouble(temp.get(i+5)));
+            		this.add(a);
+            		i+=5;
+            		
+            	}else if(temp.get(i).equals("Savings")){
+            		a=new SavingsAccount();
+            		a.setNumber(temp.get(i+1));
+            		a.setOwner(temp.get(i+2));
+            		a.setBalance(Double.parseDouble(temp.get(i+3)));
+            		try {
+            		a.setDateOpened(parserSDF.parse(temp.get(i+4)));
+            		} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            		((SavingsAccount) a).setMinBalance(Double.parseDouble(temp.get(i+5)));
+            		((SavingsAccount) a).setInterestRate(Double.parseDouble(temp.get(i+6)));
+            		this.add(a);
+            		i+=6;
+            	}
+        }
+            
+        }
+        
+        
+        
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" + 
+                fileName + "'");                
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '" 
+                + fileName + "'");                 
+        }
+        
+	
+	}
+
+	public void saveToBinary(){
+		try{
+			FileOutputStream f_out = 
+					new FileOutputStream("binFile.ser");
+
+			// Write object with ObjectOutputStream
+			ObjectOutputStream obj_out = new
+					ObjectOutputStream (f_out);
+
+			// Write object out to disk
+			for(int i=0;i<acts.size();i++){
+				if(acts.get(i) instanceof CheckingAccount){
+					obj_out.writeObject (acts.get(i));
+				}else if(acts.get(i)instanceof SavingsAccount){
+					obj_out.writeObject (acts.get(i));
+				}
+				}
+			f_out.close();
+		}
+		catch(IOException exception){
+			System.out.println("Something went wrong!");
+		}
+
+	}
+
+	public void LoadFromBinary(){
+
+		// Read from disk using FileInputStream
+		FileInputStream f_in;
+		Object obj;
+		try{
+			f_in = new FileInputStream("binFile.ser");
+			// Read object using ObjectInputStream
+			ObjectInputStream obj_in = 
+					new ObjectInputStream (f_in);
+
+			// Read an object
+			try {
+				obj = obj_in.readObject();
 			
-			if (result == JOptionPane.OK_OPTION) {
-				String sAcctNum = acctNum.getText();
-				a.setNumber(sAcctNum);
-				String sAcctOwner = acctOwner.getText();
-				a.setOwner(sAcctOwner);
-				//GregorianCalendar date = new GregorianCalendar(y, m, d);
-				//a.setDateOpened(date.toString());
-				a.setDateOpened(dateChooser.getDate());
-				String bal = acctBal.getText();
-				double b = Double.parseDouble(bal);
-				a.setBalance(b);
-				String sMinBal = minBal.getText();
-				double mb = Double.parseDouble(sMinBal);
-				a.setMinBalance(mb);
-				String sIntRate = intRate.getText();
-				double ir = Double.parseDouble(sIntRate);
-				a.setInterestRate(ir);
-				
-			
-				bank.add(a);
+			if (obj instanceof SavingsAccount){
+				SavingsAccount sa = new SavingsAccount();
+				sa = (SavingsAccount) obj;
+				this.add(sa);
 			}
-	    }
-	    if(e.getSource() == saveBinary){
-	    	bank.saveToBinary();
-	    }
-	    if(e.getSource() == loadBinary){
-	    	bank.LoadFromBinary();
-	    }
-	    if(e.getSource() == saveText){
-	    	bank.saveToText();
-	    }
-	    if(e.getSource() == loadText){
-	    	bank.LoadFromText();
-	    }
-	    if(e.getSource() == nameSort){
-	    	bank.sortByName();
-	    }
-	    if(e.getSource() == numberSort){
-	    	bank.sortByNumber();
-	    }
-	    if(e.getSource() == dateSort){
-	    	bank.sortByDate();
-	    }
-	    if(e.getSource() == delete){
-	    	bank.delete(table.getSelectedRow());
-	    	bank.sortByDate();
-	    }
-	    if(e.getSource() == update){
-	    	table.getSelectedRow();
-	    	bank.update();
-	    	bank.sortByDate();
-	    }
-	  }
+			if(obj instanceof CheckingAccount){
+				CheckingAccount ca = new CheckingAccount();
+				ca = (CheckingAccount) obj;
+				this.add(ca);
+			}
+			f_in.close();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+			
+		catch(IOException exception){
+			System.out.println("What happened?!");
+		}
+
+	}
 }
+
+class nameComparator implements Comparator<Account>{
+	public int compare(Account s1, Account s2){
+		return s1.getOwner().compareTo(s2.getOwner());
+	}
+}
+
+class numberComparator implements Comparator<Account>{
+	public int compare(Account s1, Account s2){
+		return s1.getNumber().compareTo(s2.getNumber());
+	}
+}
+
+class dateComparator implements Comparator<Account>{
+	public int compare(Account s1, Account s2){
+		return s1.getDateOpened().compareTo(s2.getDateOpened());
+	}
 }
