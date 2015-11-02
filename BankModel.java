@@ -1,8 +1,13 @@
 package Project3;
 
 import javax.swing.*;
+
+import java.io.*;
+
 import javax.swing.table.AbstractTableModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class BankModel extends AbstractTableModel{
@@ -26,24 +31,24 @@ public class BankModel extends AbstractTableModel{
 		}
 	}
 	
-	public void Update(){
+	public void update(){
 		//acts.add(a);
 		fireTableRowsUpdated(0, getSize()-1);
 	}
 	
 	public void sortByName(){
 		Collections.sort(acts, new nameComparator());
-		this.Update();
+		this.update();
 	}
 	
 	public void sortByNumber(){
 		Collections.sort(acts, new numberComparator());
-		this.Update();
+		this.update();
 	}
 
 	public void sortByDate(){
 		Collections.sort(acts, new dateComparator());
-		this.Update();
+		this.update();
 	}
 	
 	public ArrayList getActs(){
@@ -106,6 +111,216 @@ public class BankModel extends AbstractTableModel{
 	
 	public int getSize(){
 		return acts.size();
+	}
+	
+	public void saveToText(){
+		String fileName = "bank.txt";
+		ArrayList<Account> bankCopy = new ArrayList<Account>();
+		bankCopy = acts;
+		
+		
+        try {
+        	
+            FileWriter fileWriter =
+                new FileWriter(fileName);
+
+            
+            PrintWriter PrintWriter =
+                new PrintWriter(fileWriter);
+
+            
+           // bufferedWriter.write(bankCopy.toString());
+            for(int i=0;i<acts.size();i++){
+            	PrintWriter.println(acts.get(i).getAcntType());
+            	PrintWriter.println(acts.get(i).getNumber());
+            	PrintWriter.println(acts.get(i).getOwner());
+            	PrintWriter.println(""+acts.get(i).getBalance());
+            	PrintWriter.println(""+acts.get(i).getDateOpened());
+            	if(acts.get(i) instanceof CheckingAccount){
+            		CheckingAccount a = new CheckingAccount();
+            		a = (CheckingAccount) acts.get(i);
+            		PrintWriter.println(""+a.getMonthlyFee());
+            	}else{
+            		SavingsAccount b = new SavingsAccount();
+            		b = (SavingsAccount) acts.get(i);
+            		PrintWriter.println(""+b.getMinBalance());
+            		PrintWriter.println(""+b.getInterestRate());
+            	}
+            }
+            
+            PrintWriter.close();
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error writing to file '"
+                + fileName + "'");
+        }
+
+	}
+	
+	public void LoadFromText() {
+		String fileName = "bank.txt";
+		
+		Account ca = new CheckingAccount();
+		Account sa = new SavingsAccount();
+        //String line = null;
+        ArrayList<String> inActs = 
+        		new ArrayList<String>();
+        SimpleDateFormat parserSDF=new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+
+//        try {
+//            
+//            FileReader fileReader = 
+//                new FileReader(fileName);
+//
+//            
+//            BufferedReader bufferedReader = 
+//                new BufferedReader(fileReader);
+//
+//            while((line = bufferedReader.readLine())
+//            		!= null) {
+//                //ca.setNumber(bufferedReader.readLine());
+//            	//bank.add(ca);
+//            	inActs.add(line);
+//            	Iterator<String> it = inActs.iterator();
+//            	while(it.hasNext()){
+//            		inActs.add(it.next());
+//            		System.out.println(inActs);
+//            	}
+//            }   
+//
+//            
+//            bufferedReader.close();         
+//        }
+        
+        try (BufferedReader br = new BufferedReader(new FileReader("bank.txt"))) {
+            String line;
+            ArrayList<String> temp = new ArrayList<String>();
+            Account a;
+            while ((line = br.readLine()) != null) {
+               System.out.println(line);
+               temp.add(line);
+            }
+            br.close();
+            System.out.println(temp);
+            int place=0;
+        
+            
+            for(int i=0;i<temp.size();i++){
+            	if(temp.get(i).equals("Checking")){
+            		a=new CheckingAccount();
+            		a.setNumber(temp.get(i+1));
+            		a.setOwner(temp.get(i+2));
+            		a.setBalance(Double.parseDouble(temp.get(i+3)));
+            		try {
+						a.setDateOpened(parserSDF.parse(temp.get(i+4)));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            		
+            		
+            		((CheckingAccount) a).setMonthlyFee(Double.parseDouble(temp.get(i+5)));
+            		this.add(a);
+            		i+=5;
+            		
+            	}else if(temp.get(i).equals("Savings")){
+            		a=new SavingsAccount();
+            		a.setNumber(temp.get(i+1));
+            		a.setOwner(temp.get(i+2));
+            		a.setBalance(Double.parseDouble(temp.get(i+3)));
+            		try {
+            		a.setDateOpened(parserSDF.parse(temp.get(i+4)));
+            		} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            		((SavingsAccount) a).setMinBalance(Double.parseDouble(temp.get(i+5)));
+            		((SavingsAccount) a).setInterestRate(Double.parseDouble(temp.get(i+6)));
+            		this.add(a);
+            		i+=6;
+            	}
+        }
+            
+        }
+        
+        
+        
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" + 
+                fileName + "'");                
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '" 
+                + fileName + "'");                 
+        }
+        
+	
+	}
+
+	public void saveToBinary(){
+		try{
+			FileOutputStream f_out = 
+					new FileOutputStream("binFile.ser");
+
+			// Write object with ObjectOutputStream
+			ObjectOutputStream obj_out = new
+					ObjectOutputStream (f_out);
+
+			// Write object out to disk
+			for(int i=0;i<acts.size();i++){
+				if(acts.get(i) instanceof CheckingAccount){
+					obj_out.writeObject (acts.get(i));
+				}else if(acts.get(i)instanceof SavingsAccount){
+					obj_out.writeObject (acts.get(i));
+				}
+				}
+			f_out.close();
+		}
+		catch(IOException exception){
+			System.out.println("Something went wrong!");
+		}
+
+	}
+
+	public void LoadFromBinary(){
+
+		// Read from disk using FileInputStream
+		FileInputStream f_in;
+		Object obj;
+		try{
+			f_in = new FileInputStream("binFile.ser");
+			// Read object using ObjectInputStream
+			ObjectInputStream obj_in = 
+					new ObjectInputStream (f_in);
+
+			// Read an object
+			try {
+				obj = obj_in.readObject();
+			
+			if (obj instanceof SavingsAccount){
+				SavingsAccount sa = new SavingsAccount();
+				sa = (SavingsAccount) obj;
+				this.add(sa);
+			}
+			if(obj instanceof CheckingAccount){
+				CheckingAccount ca = new CheckingAccount();
+				ca = (CheckingAccount) obj;
+				this.add(ca);
+			}
+			f_in.close();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+			
+		catch(IOException exception){
+			System.out.println("What happened?!");
+		}
+
 	}
 }
 
