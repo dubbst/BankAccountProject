@@ -9,6 +9,7 @@ public abstract class Account implements Serializable{
 	protected String owner;
 	protected Date dateOpened;
 	protected double balance;
+	protected String acntType;
 	
 	public Account(){
 		
@@ -34,8 +35,8 @@ public abstract class Account implements Serializable{
 		return dateOpened;
 	}
 
-	public void setDateOpened(GregorianCalendar d) {
-		this.dateOpened = d.getTime();
+	public void setDateOpened(Date d) {
+		this.dateOpened = null;
 	}
 
 	public double getBalance() {
@@ -49,6 +50,10 @@ public abstract class Account implements Serializable{
 	public boolean equals(Account a){
 		//put code
 		return true;
+	}
+	
+	public String getAcntType(){
+		return acntType;
 	}
 	
 	@Override
