@@ -270,13 +270,14 @@ public class BankModel extends AbstractTableModel{
 					ObjectOutputStream (f_out);
 
 			// Write object out to disk
-			for(int i=0;i<acts.size();i++){
-				if(acts.get(i) instanceof CheckingAccount){
-					obj_out.writeObject (acts.get(i));
-				}else if(acts.get(i)instanceof SavingsAccount){
-					obj_out.writeObject (acts.get(i));
-				}
-				}
+//			for(int i=0;i<acts.size();i++){
+//				if(acts.get(i) instanceof CheckingAccount){
+//					obj_out.writeObject (acts.get(i));
+//				}else if(acts.get(i)instanceof SavingsAccount){
+//					obj_out.writeObject (acts.get(i));
+//				}
+//				}
+			obj_out.writeObject(acts);
 			f_out.close();
 		}
 		catch(IOException exception){
@@ -299,17 +300,24 @@ public class BankModel extends AbstractTableModel{
 			// Read an object
 			try {
 				obj = obj_in.readObject();
-			
-			if (obj instanceof SavingsAccount){
-				SavingsAccount sa = new SavingsAccount();
-				sa = (SavingsAccount) obj;
-				this.add(sa);
-			}
-			if(obj instanceof CheckingAccount){
-				CheckingAccount ca = new CheckingAccount();
-				ca = (CheckingAccount) obj;
-				this.add(ca);
-			}
+				System.out.println(obj);
+				ArrayList<Account> temp = (ArrayList<Account>) obj;
+				for(int i=0;i<temp.size();i++){
+					this.add(temp.get(i));
+				}
+				System.out.println(acts);
+//			if (obj instanceof SavingsAccount){
+//				SavingsAccount sa = new SavingsAccount();
+//				sa = (SavingsAccount) obj;
+//				this.add(sa);
+//				System.out.println(sa);
+//			}
+//			if(obj instanceof CheckingAccount){
+//				CheckingAccount ca = new CheckingAccount();
+//				ca = (CheckingAccount) obj;
+//				this.add(ca);
+//				System.out.print(ca);
+//			}
 			f_in.close();
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
