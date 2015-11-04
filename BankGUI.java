@@ -5,6 +5,7 @@ package Project3;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -40,6 +41,8 @@ public class BankGUI extends JFrame{
 	private JMenuItem loadText = new JMenuItem("Load Text");
 	private JMenuItem delete = new JMenuItem("Delete");
 	private JMenuItem update = new JMenuItem("Update");
+	private JMenuItem saveXML = new JMenuItem("Save XML");
+	private JMenuItem loadXML = new JMenuItem("Load XML");
 	
 	private JMenuItem checking = new JMenuItem("Checkings");
 	private JMenuItem saving = new JMenuItem("Savings");
@@ -62,6 +65,8 @@ public class BankGUI extends JFrame{
 		file.add(loadBinary);
 		file.add(saveText);
 		file.add(loadText);
+		file.add(saveXML);
+		file.add(loadXML);
 		file.add(delete);
 		file.add(update);
 		
@@ -83,6 +88,8 @@ public class BankGUI extends JFrame{
 		loadBinary.addActionListener(new MenuActionListener());
 		saveText.addActionListener(new MenuActionListener());
 		loadText.addActionListener(new MenuActionListener());
+		saveXML.addActionListener(new MenuActionListener());
+		loadXML.addActionListener(new MenuActionListener());
 		delete.addActionListener(new MenuActionListener());
 		update.addActionListener(new MenuActionListener());
 		
@@ -273,6 +280,12 @@ class MenuActionListener implements ActionListener {
 	    if(e.getSource() == loadText){
 	    	bank.LoadFromText();
 	    }
+	    if(e.getSource() == saveXML){
+	    	bank.saveToXML();
+	    }
+	    if(e.getSource() == loadXML){
+	    	bank.LoadFromXML();
+	    }
 	    if(e.getSource() == nameSort){
 	    	bank.sortByName();
 	    }
@@ -287,10 +300,96 @@ class MenuActionListener implements ActionListener {
 	    	bank.sortByDate();
 	    }
 	    if(e.getSource() == update){
-	    	table.getSelectedRow();
-	    	bank.update();
-	    	bank.sortByDate();
-	    }
+	    	int index = table.getSelectedRow();
+	    	ArrayList<Account> list = bank.getActs();
+	    	Account a = list.get(index);
+	    	
+	    	bank.delete(table.getSelectedRow());
+	    	
+	    	JTextField acctNum = new JTextField(10);
+			JTextField acctOwner = new JTextField(10);
+			JTextField date = new JTextField(10);
+			JTextField acctBal = new JTextField(10);
+			JTextField minBal = new JTextField(10);
+			JTextField intRate = new JTextField(10);
+			JTextField fee = new JTextField(10);
+			
+			JPanel checkingPanel = new JPanel();
+			checkingPanel.setLayout(new BoxLayout(checkingPanel, 
+					BoxLayout.Y_AXIS));
+			checkingPanel.add(new JLabel("Account Number: "));
+			acctNum.setText(a.getNumber());
+			checkingPanel.add(acctNum);
+			checkingPanel.add(new JLabel("Account Owner: "));
+			acctOwner.setText(a.getOwner());
+			checkingPanel.add(acctOwner);
+			checkingPanel.add(new JLabel("Date Opened: "));
+			//checkingPanel.add(date);
+			JDateChooser dateChooser=new JDateChooser();
+			dateChooser.setBounds(20, 20, 200, 20);
+			checkingPanel.add(dateChooser);
+			checkingPanel.add(new JLabel("Account Balance: "));
+			acctBal.setText(""+a.getBalance());
+			checkingPanel.add(acctBal);
+			if(a instanceof CheckingAccount){
+				checkingPanel.add(new JLabel("Monthly Fee: "));
+				fee.setText(""+((CheckingAccount) a).getMonthlyFee());
+				checkingPanel.add(fee);
+			}else if(a instanceof SavingsAccount){
+				checkingPanel.add(new JLabel("Minimum Balance: "));
+				minBal.setText(""+((SavingsAccount) a).getMinBalance());
+				checkingPanel.add(minBal);
+				checkingPanel.add(new JLabel("Interest Rate: "));
+				intRate.setText(""+((SavingsAccount) a).getInterestRate());
+				checkingPanel.add(intRate);
+			}
+			
+			int result = JOptionPane.showConfirmDialog(null, 
+					checkingPanel, "Enter Checking "
+							+ "Account", 
+							JOptionPane.OK_CANCEL_OPTION);
+			if(a instanceof CheckingAccount){
+			if (result == JOptionPane.OK_OPTION) {
+				String sAcctNum = acctNum.getText();
+				a.setNumber(sAcctNum);
+				String sAcctOwner = acctOwner.getText();
+				a.setOwner(sAcctOwner);
+				//GregorianCalendar date = new GregorianCalendar(y, m, d);
+				//a.setDateOpened(date.toString());
+				a.setDateOpened(dateChooser.getDate());
+				String bal = acctBal.getText();
+				double b = Double.parseDouble(bal);
+				a.setBalance(b);
+				String sFee = fee.getText();
+				double f = Double.parseDouble(sFee);
+				((CheckingAccount) a).setMonthlyFee(f);
+				bank.add(a);
+			}
+			}
+			
+			if(a instanceof SavingsAccount){
+			if (result == JOptionPane.OK_OPTION) {
+				String sAcctNum = acctNum.getText();
+				a.setNumber(sAcctNum);
+				String sAcctOwner = acctOwner.getText();
+				a.setOwner(sAcctOwner);
+				//GregorianCalendar date = new GregorianCalendar(y, m, d);
+				//a.setDateOpened(date.toString());
+				a.setDateOpened(dateChooser.getDate());
+				String bal = acctBal.getText();
+				double b = Double.parseDouble(bal);
+				a.setBalance(b);
+				String sMinBal = minBal.getText();
+				double mb = Double.parseDouble(sMinBal);
+				((SavingsAccount) a).setMinBalance(mb);
+				String sIntRate = intRate.getText();
+				double ir = Double.parseDouble(sIntRate);
+				((SavingsAccount) a).setInterestRate(ir);
+				bank.add(a);
+			}
+			}
+		
 	  }
+}
 }
 }
